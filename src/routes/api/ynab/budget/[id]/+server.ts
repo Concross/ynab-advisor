@@ -1,17 +1,5 @@
 import { YNAB_ACCESS_TOKEN } from '$env/static/private';
-
-interface Budget {
-	id: string;
-	name: string;
-	total_amount: number;
-	// Add other properties as needed
-}
-
-interface YNABResponse {
-	data: {
-		budget: Budget;
-	};
-}
+import type { SingleBudgetSummaryResponse } from '$lib/ynabTypes';
 
 export async function GET({ params }: { params: { id: string } }): Promise<Response> {
 	const { id } = params;
@@ -20,7 +8,7 @@ export async function GET({ params }: { params: { id: string } }): Promise<Respo
 			headers: { Authorization: `Bearer ${YNAB_ACCESS_TOKEN}` }
 		});
 		if (!response.ok) throw new Error('Failed to fetch budget details');
-		const data: YNABResponse = await response.json();
+		const data: SingleBudgetSummaryResponse = await response.json();
 		return new Response(JSON.stringify(data.data.budget), { status: 200 });
 	} catch (err: Error | unknown) {
 		if (err instanceof Error) {

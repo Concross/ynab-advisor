@@ -1,21 +1,16 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import type { BudgetSummary } from '$lib/ynabTypes';
 
-	interface Budget {
-		id: string;
-		name: string;
-		last_modified_on: string;
-	}
-
-	let budgets: Budget[] = [];
+	let budgets: BudgetSummary[] = [];
 	let error: string | null = null;
 
 	onMount(async () => {
 		try {
 			const response = await fetch('/api/ynab/budgets');
 			if (!response.ok) throw new Error('Failed to fetch budgets');
-			const data: { budgets: Budget[] } = await response.json();
+			const data: { budgets: BudgetSummary[] } = await response.json();
 			budgets = data.budgets;
 		} catch (err: Error | unknown) {
 			if (err instanceof Error) {

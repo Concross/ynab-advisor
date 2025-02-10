@@ -7,6 +7,16 @@ export interface BudgetSummary {
 	last_month: string;
 	date_format: DateFormat;
 	currency_format: CurrencyFormat;
+	accounts: Account[];
+	payees: Payee[];
+	payee_locations: PayeeLocation[];
+	category_groups: CategoryGroup[];
+	categories: Category[];
+	months: Month[];
+	transactions: Transaction[];
+	subtransactions: Subtransaction[];
+	scheduled_transactions: ScheduledTransaction[];
+	scheduled_subtransactions: ScheduledSubtransaction[];
 }
 
 // Date Format
@@ -38,6 +48,13 @@ export interface Account {
 	cleared_balance: number;
 	uncleared_balance: number;
 	transfer_payee_id: string;
+	direct_import_linked: boolean;
+	direct_import_in_error: boolean;
+	last_reconciled_at: string | null;
+	debt_original_balance: number;
+	debt_interest_rates: Record<string, number>;
+	debt_minimum_payments: Record<string, number>;
+	debt_escrow_amounts: Record<string, number>;
 	deleted: boolean;
 }
 
@@ -50,6 +67,7 @@ export interface Transaction {
 	cleared: string;
 	approved: boolean;
 	flag_color: string | null;
+	flag_name: string;
 	account_id: string;
 	payee_id: string | null;
 	category_id: string | null;
@@ -57,6 +75,53 @@ export interface Transaction {
 	transfer_transaction_id: string | null;
 	matched_transaction_id: string | null;
 	import_id: string | null;
+	import_payee_name: string;
+	import_payee_name_original: string;
+	debt_transaction_type: string;
+	deleted: boolean;
+}
+
+// Subtransaction
+export interface Subtransaction {
+	id: string;
+	transaction_id: string;
+	amount: number;
+	memo: string | null;
+	payee_id: string;
+	payee_name: string;
+	category_id: string;
+	category_name: string;
+	transfer_account_id: string | null;
+	transfer_transaction_id: string | null;
+	deleted: boolean;
+}
+
+// Scheduled Transaction
+export interface ScheduledTransaction {
+	id: string;
+	date_first: string;
+	date_next: string;
+	frequency: string;
+	amount: number;
+	memo: string | null;
+	flag_color: string | null;
+	flag_name: string;
+	account_id: string;
+	payee_id: string | null;
+	category_id: string | null;
+	transfer_account_id: string | null;
+	deleted: boolean;
+}
+
+// Scheduled Subtransaction
+export interface ScheduledSubtransaction {
+	id: string;
+	scheduled_transaction_id: string;
+	amount: number;
+	memo: string | null;
+	payee_id: string;
+	category_id: string;
+	transfer_account_id: string | null;
 	deleted: boolean;
 }
 
@@ -64,6 +129,7 @@ export interface Transaction {
 export interface Category {
 	id: string;
 	category_group_id: string;
+	category_group_name: string;
 	name: string;
 	hidden: boolean;
 	original_category_group_id: string | null;
@@ -72,10 +138,18 @@ export interface Category {
 	activity: number;
 	balance: number;
 	goal_type: string | null;
-	goal_creation_month: string | null;
-	goal_target: number | null;
-	goal_target_month: string | null;
-	goal_percentage_complete: number | null;
+	goal_needs_whole_amount: boolean | null;
+	goal_day: number;
+	goal_cadence: number;
+	goal_cadence_frequency: number;
+	goal_creation_month: string;
+	goal_target: number;
+	goal_target_month: string;
+	goal_percentage_complete: number;
+	goal_months_to_budget: number;
+	goal_under_funded: number;
+	goal_overall_funded: number;
+	goal_overall_left: number;
 	deleted: boolean;
 }
 
@@ -84,6 +158,23 @@ export interface Payee {
 	id: string;
 	name: string;
 	transfer_account_id: string | null;
+	deleted: boolean;
+}
+
+// Payee Location
+export interface PayeeLocation {
+	id: string;
+	payee_id: string;
+	latitude: string;
+	longitude: string;
+	deleted: boolean;
+}
+
+// Category Group
+export interface CategoryGroup {
+	id: string;
+	name: string;
+	hidden: boolean;
 	deleted: boolean;
 }
 
@@ -97,6 +188,7 @@ export interface Month {
 	to_be_budgeted: number;
 	age_of_money: number | null;
 	deleted: boolean;
+	categories: Category[];
 }
 
 // User
@@ -111,6 +203,13 @@ export interface User {
 export interface BudgetSummaryResponse {
 	data: {
 		budgets: BudgetSummary[];
+	};
+}
+
+// Single Budget Summary Response
+export interface SingleBudgetSummaryResponse {
+	data: {
+		budget: BudgetSummary;
 	};
 }
 
